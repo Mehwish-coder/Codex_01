@@ -1,0 +1,119 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+using namespace std;
+// Flight structure
+struct Flight {
+    int id;
+    char source[20];
+    char destination[20];
+    char timing[10]; // HH:MM
+};
+// Ensure file exists
+void ensureFileExists() {
+    ofstream file("flights.txt", ios::app); // creates file if not exist
+    file.close();
+}
+// Add Flight
+void addFlight() {
+    Flight f;
+    ofstream file("flights.txt", ios::app);
+    cout << "\nEnter Flight ID: ";
+    cin >> f.id;
+    cin.ignore(); // clear buffer
+    cout << "Enter Source: ";
+    cin.getline(f.source, 20);
+    cout << "Enter Destination: ";
+    cin.getline(f.destination, 20);
+    cout << "Enter Flight Timing (HH:MM): ";
+    cin.getline(f.timing, 10);
+    file << f.id << " " << f.source << " " << f.destination << " " << f.timing << endl;
+    file.close();
+    cout << "\nFlight Added Successfully!\n";
+}
+// View Flights
+void viewFlights() {
+    ensureFileExists();
+    Flight f;
+    ifstream file("flights.txt");
+    cout << "\n--- Flight Records ---\n";
+    bool empty = true;
+    while (file >> f.id >> f.source >> f.destination >> f.timing) {
+        cout << "ID: " << f.id
+             << " | From: " << f.source
+             << " | To: " << f.destination
+             << " | Timing: " << f.timing << endl;
+        empty = false;
+    }
+    if (empty) cout << "No flights found.\n";
+    file.close();
+}
+// Search Flight by ID
+void searchFlight() {
+    ensureFileExists();
+    Flight f;
+    int searchID;
+    bool found = false;
+    ifstream file("flights.txt");
+    cout << "\nEnter Flight ID to search: ";
+    cin >> searchID;
+    cin.ignore(); // clear buffer
+    while (file >> f.id >> f.source >> f.destination >> f.timing) {
+        if (f.id == searchID) {
+            cout << "\nFlight Found!\n";
+            cout << "From: " << f.source
+                 << "\nTo: " << f.destination
+                 << "\nTiming: " << f.timing << endl;
+            found = true;
+            break;
+        }
+    }
+    if (!found)
+        cout << "\nFlight Not Found!\n";
+
+    file.close();
+}
+// Clear all flight data
+void clearData() {
+    ofstream file("flights.txt"); // overwrite file ? clears all data
+    file.close();
+    cout << "\nAll flight data cleared!\n";
+}
+// Main Menu
+int main() {
+    int choice;
+    ensureFileExists();
+    do {
+        cout << "\n===== Airport Management System =====\n";
+        cout << "1. Add Flight\n";
+        cout << "2. View Flights\n";
+        cout << "3. Search Flight\n";
+        cout << "4. Clear All Data\n";
+        cout << "5. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+        cin.ignore(); // clear buffer
+        switch(choice) {
+            case 1:
+                addFlight();
+                break;
+            case 2:
+                viewFlights();
+                break;
+            case 3:
+                searchFlight();
+                break;
+            case 4:
+                clearData();
+                break;
+            case 5:
+                cout << "\nExiting program...\n";
+                break;
+            default:
+                cout << "\nInvalid choice! Enter 1-5.\n";
+        }
+        cout << "------------------------------------\n"; // separator for clarity
+    } while (choice != 5);
+    return 0;
+}
+
